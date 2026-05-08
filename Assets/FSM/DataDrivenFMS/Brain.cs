@@ -7,6 +7,7 @@ public class Brain : MonoBehaviour
    public Transform target;
    public NavMeshAgent Agent { get; private set; }
    
+   public StateSo initialState;
    private StateSo _currentState;
    
 
@@ -14,6 +15,11 @@ public class Brain : MonoBehaviour
    private void Awake()
    {
          Agent = GetComponent<NavMeshAgent>();
+            if (initialState != null)
+            {
+                _currentState = Instantiate(initialState);
+                _currentState.OnEnter(this);
+            }
    }
 
    private void Update()
