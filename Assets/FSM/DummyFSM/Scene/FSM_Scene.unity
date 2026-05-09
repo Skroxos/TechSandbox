@@ -286,23 +286,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 474553246}
   _availableStates:
-  - rid: 742191433432956992
-  - rid: 742191433432956993
-  - rid: 742191433432956994
+  - rid: 742191442636046336
+  - rid: 742191442636046337
+  - rid: 742191442636046338
   references:
     version: 2
     RefIds:
-    - rid: 742191433432956992
-      type: {class: IdleState, ns: , asm: Assembly-CSharp}
+    - rid: 742191442636046336
+      type: {class: IdleState, ns: FSM.DummyFSM.Scripts, asm: Assembly-CSharp}
       data:
-        detectionRange: 10
-    - rid: 742191433432956993
-      type: {class: ChaseState, ns: , asm: Assembly-CSharp}
+        detectionRange: 3
+    - rid: 742191442636046337
+      type: {class: ChaseState, ns: FSM.DummyFSM.Scripts, asm: Assembly-CSharp}
       data:
-        chaseRange: 15
+        chaseRange: 5
         stopChaseRange: 1
-    - rid: 742191433432956994
-      type: {class: AttackState, ns: , asm: Assembly-CSharp}
+    - rid: 742191442636046338
+      type: {class: AttackState, ns: FSM.DummyFSM.Scripts, asm: Assembly-CSharp}
       data:
         attackRange: 2
 --- !u!136 &752702468
