@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: FireBallStrategy
   m_EditorClassIdentifier: 
   prefab: {fileID: 7622867992413677639, guid: d0f22325bd785f946941b5e12ae65fbd, type: 3}
-  projectilespeed: 1
+  projectilespeed: 50
