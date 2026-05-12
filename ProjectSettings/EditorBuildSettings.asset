@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 0
+    path: Assets/MainMenu/Scene/MainMenuScene.unity
+    guid: 74fec5caafd65344f842d7d393e9210f
+  - enabled: 0
+    path: Assets/FSM/DummyFSM/Scene/FSM_Scene.unity
+    guid: a2050b1a3e9327b4d9e9cec760eb008b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 97c3b363c148e024c8fa8e36f416d215, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
