@@ -5,11 +5,11 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class FirstApiCall : MonoBehaviour
+public class FirstApiCall
 {
     private readonly string url = "https://jsonplaceholder.typicode.com/posts/1";
 
-    [ContextMenu("Test GET Request")]
+    
     public async void FetchData()
     {
         Debug.Log("Sending request");
@@ -44,7 +44,7 @@ public class FirstApiCall : MonoBehaviour
         }
     }
 
-    [ContextMenu("Test POST Request")]
+    
     public async void SendData()
     {
         PostData newPost = new PostData
@@ -61,7 +61,7 @@ public class FirstApiCall : MonoBehaviour
         await SendPostRequestAsync("https://jsonplaceholder.typicode.com/posts", jsonPayload);
     }    
 
-    private async UniTask SendPostRequestAsync(string url, string jsonPayload)
+    public async UniTask SendPostRequestAsync(string url, string jsonPayload)
     {
         using CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
