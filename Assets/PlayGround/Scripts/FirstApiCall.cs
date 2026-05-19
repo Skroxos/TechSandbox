@@ -5,7 +5,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class FirstApiCall
+public class FirstApiCall : INetworkService
 {
     private readonly string url = "https://jsonplaceholder.typicode.com/posts/1";
 

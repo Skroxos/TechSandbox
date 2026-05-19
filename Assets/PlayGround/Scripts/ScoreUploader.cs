@@ -3,18 +3,18 @@ using VContainer;
 
 public class ScoreUploader : MonoBehaviour
 {
-    private FirstApiCall _firstApiCall;
+    private INetworkService _networkService;
 
     [Inject]
-    public void Construct(FirstApiCall firstApiCall)
+    public void Construct(INetworkService networkService )
     {
-        _firstApiCall = firstApiCall;
+        _networkService = networkService;
     }
 
     public async void OnUploadButtonClicked()
     {
         Debug.Log("Clicked on button");
         string testJson = "{\"score\": 999}";
-        await _firstApiCall.SendPostRequestAsync("https://jsonplaceholder.typicode.com/posts", testJson);
+        await _networkService.SendPostRequestAsync("https://jsonplaceholder.typicode.com/posts", testJson);
     }
 }
