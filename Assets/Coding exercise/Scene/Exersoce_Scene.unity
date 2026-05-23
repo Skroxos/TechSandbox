@@ -2493,6 +2493,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryView: {fileID: 1220780115}
+  quantityToAdd: 1
+  craftingRecipes:
+  - {fileID: 11400000, guid: fba0f09dbcf67194a8a3c4983b00930b, type: 2}
   testItem: {fileID: 11400000, guid: a584d8d628ae16f4b9e16cefb6aa866e, type: 2}
 --- !u!1 &1216350805
 GameObject:

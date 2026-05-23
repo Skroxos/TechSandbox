@@ -75,27 +75,45 @@ public class InventoryModel
 
 
 
-    public bool RemoveItem(ItemSO item)
+    public bool RemoveItem(ItemSO item, int quantity)
+    {
+        itemDictionary[item.itemID] -= quantity;
+        if (itemDictionary[item.itemID] <= 0)
         {
-            for (int i = 0; i < itemSlots.Length; i++)
+            itemDictionary.Remove(item.itemID);
+        }
+        for (int i = itemSlots.Length - 1; i >= 0; i--)
+        {
+            if (!itemSlots[i].IsEmpty && itemSlots[i].item.itemID == item.itemID)
             {
-                if (itemSlots[i].item != null && itemSlots[i].item.itemID == item.itemID)
+                int quantityToRemove = Mathf.Min(itemSlots[i].quantity, quantity);
+
+                itemSlots[i].quantity -= quantityToRemove;
+                quantity -= quantityToRemove;
+
+                if (itemSlots[i].quantity <= 0)
                 {
-                    itemSlots[i].quantity--;
-                    if (itemSlots[i].quantity <= 0)
-                    {
-                        itemSlots[i].item = null;
-                        itemSlots[i].quantity = 0;
-                    }
-                    OnInventoryChanged?.Invoke(i, null, itemSlots[i].quantity);
-                return true;
+                    itemSlots[i].item = null;
+                    OnInventoryChanged?.Invoke(i, null, 0);
+                }
+                else
+                {
+                    OnInventoryChanged?.Invoke(i, item.itemIcon, itemSlots[i].quantity);
+                }
+
+                if (quantity <= 0)
+                {
+                    return true;
                 }
             }
-            return false;
         }
 
-    public bool HasItem(int itemID)
+        return false;
+    }
+
+
+    public bool HasItemForCrafting(int itemID, int quantity)
     {
-        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] > 0;
+        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] >= quantity;
     }
 }
