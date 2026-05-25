@@ -21,99 +21,131 @@ public class InventoryModel
 
         public bool AddItem(ItemSO item, int quantity)
         {
+        if (item == null || quantity <= 0) return false;
+        int remainingQuantity = quantity;
         if (item.isStackable)
         {
-            for (int i = 0; i < itemSlots.Length; i++)
-            {
-                if (!itemSlots[i].IsEmpty && itemSlots[i].item.itemID == item.itemID && !itemSlots[i].IsFull)
-                {
-                    int availableSpace = item.maxStackSize - itemSlots[i].quantity;
-                    int quantityToAdd = Mathf.Min(availableSpace, quantity);
-                    itemSlots[i].quantity += quantityToAdd;
-                    quantity -= quantityToAdd;
-                    OnInventoryChanged?.Invoke(i, item.itemIcon, itemSlots[i].quantity);
-                        if (itemDictionary.ContainsKey(item.itemID))
-                        {
-                            itemDictionary[item.itemID] += quantityToAdd;
-                        }
-                        else
-                        {
-                            itemDictionary.Add(item.itemID, quantityToAdd);
-                        }
-                        if (quantity <= 0)
-                        {
-                        return true;
-                        }
-                }
-            }
+            remainingQuantity = FillExistingStacks(item, remainingQuantity);
         }
-        for (int i = 0; i < itemSlots.Length; i++)
+        if (remainingQuantity > 0)
         {
-            if (itemSlots[i].IsEmpty)
-            {
-                int quantityToAdd = item.isStackable ? Mathf.Min(item.maxStackSize, quantity) : 1;
-                itemSlots[i].item = item;
-                itemSlots[i].quantity = quantityToAdd;
-                quantity -= quantityToAdd;
-                OnInventoryChanged?.Invoke(i, item.itemIcon, itemSlots[i].quantity);
-                if (itemDictionary.ContainsKey(item.itemID))
-                {
-                    itemDictionary[item.itemID] += quantityToAdd;
-                }
-                else
-                {
-                    itemDictionary.Add(item.itemID, quantityToAdd);
-                 }
-                 if (quantity <= 0)
-                    {
-                        return true;
-                }
-            }
+            remainingQuantity = FillEmptySlots(item, remainingQuantity);
         }
-            return false;
+        return remainingQuantity == 0;
+
     }
 
 
 
     public bool RemoveItem(ItemSO item, int quantity)
     {
-        itemDictionary[item.itemID] -= quantity;
-        if (itemDictionary[item.itemID] <= 0)
+        if (!HasItem(item.itemID))
         {
-            itemDictionary.Remove(item.itemID);
+            return false;
+            // nothing to remove
         }
-        for (int i = itemSlots.Length - 1; i >= 0; i--)
+        int remainingQuantity = RemoveQuantity(item, quantity);
+        for (int i = itemSlots.Length - 1; i >= 0 && remainingQuantity > 0; i--)
         {
-            if (!itemSlots[i].IsEmpty && itemSlots[i].item.itemID == item.itemID)
+            ItemSlot slot = itemSlots[i];
+            if (slot.IsEmpty || slot.item.itemID != item.itemID) continue;
+            int quantityToRemove = Mathf.Min(slot.quantity, remainingQuantity);
+            slot.quantity -= quantityToRemove;
+            remainingQuantity -= quantityToRemove;
+            RemoveFromDictionary(item, quantityToRemove);
+            OnInventoryChanged?.Invoke(i, item.itemIcon, slot.quantity);
+            if (slot.quantity <= 0)
             {
-                int quantityToRemove = Mathf.Min(itemSlots[i].quantity, quantity);
-
-                itemSlots[i].quantity -= quantityToRemove;
-                quantity -= quantityToRemove;
-
-                if (itemSlots[i].quantity <= 0)
-                {
-                    itemSlots[i].item = null;
-                    OnInventoryChanged?.Invoke(i, null, 0);
-                }
-                else
-                {
-                    OnInventoryChanged?.Invoke(i, item.itemIcon, itemSlots[i].quantity);
-                }
-
-                if (quantity <= 0)
-                {
-                    return true;
-                }
+                slot.item = null;
+                slot.quantity = 0;
+                OnInventoryChanged?.Invoke(i, null, 0);
             }
         }
-
-        return false;
+        return true;
     }
 
 
     public bool HasItemForCrafting(int itemID, int quantity)
     {
         return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] >= quantity;
+    }
+
+
+
+
+
+
+    // Helper methods
+    private int RemoveQuantity(ItemSO item, int quantity)
+    {
+        var dictionaryQuantity = itemDictionary[item.itemID];
+        if (dictionaryQuantity < quantity)
+        {
+            return quantity - dictionaryQuantity;
+        }
+        return quantity;
+    }
+    private bool HasItem(int itemID)
+    {
+        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] > 0;
+    }
+
+    private int FillExistingStacks(ItemSO item, int amount)
+    {
+        for (int i = 0; i < itemSlots.Length && amount > 0; i++)
+        {
+            ItemSlot slot = itemSlots[i];
+
+            if (slot.IsEmpty || slot.item.itemID != item.itemID || slot.IsFull) continue;
+
+            int availableSpace = item.maxStackSize - slot.quantity;
+            int quantityToAdd = Mathf.Min(availableSpace, amount);
+
+            slot.quantity += quantityToAdd;
+            amount -= quantityToAdd;
+            AddToDictionary(item, quantityToAdd);
+            OnInventoryChanged?.Invoke(i, item.itemIcon, slot.quantity);
+        }
+        return amount;
+    }
+
+    private int FillEmptySlots(ItemSO item, int amount)
+    {
+        for (int i = 0; i < itemSlots.Length && amount > 0; i++)
+        {
+            ItemSlot slot = itemSlots[i];
+            if (!slot.IsEmpty) continue;
+            int quantityToAdd = item.isStackable ? Mathf.Min(item.maxStackSize, amount) : 1;
+            slot.item = item;
+            slot.quantity = quantityToAdd;
+            amount -= quantityToAdd;
+            AddToDictionary(item, quantityToAdd);
+            OnInventoryChanged?.Invoke(i, item.itemIcon, slot.quantity);
+        }
+        return amount;
+    }
+
+
+    private void AddToDictionary(ItemSO item, int quantity)
+    {
+        if (itemDictionary.ContainsKey(item.itemID))
+        {
+            itemDictionary[item.itemID] += quantity;
+        }
+        else
+        {
+            itemDictionary.Add(item.itemID, quantity);
+        }
+    }
+     private void RemoveFromDictionary(ItemSO item, int quantity)
+    {
+        if (itemDictionary.ContainsKey(item.itemID))
+        {
+            itemDictionary[item.itemID] -= quantity;
+            if (itemDictionary[item.itemID] <= 0)
+            {
+                itemDictionary.Remove(item.itemID);
+            }
+        }
     }
 }

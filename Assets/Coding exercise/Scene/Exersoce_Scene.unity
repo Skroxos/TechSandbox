@@ -2755,7 +2755,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   exampleItem: {fileID: 11400000, guid: a584d8d628ae16f4b9e16cefb6aa866e, type: 2}
-  exampleQuantity: 1
+  exampleQuantity: 3
 --- !u!1 &1216350805
 GameObject:
   m_ObjectHideFlags: 0

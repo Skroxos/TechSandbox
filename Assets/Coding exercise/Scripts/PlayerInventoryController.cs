@@ -21,5 +21,9 @@ public class PlayerInventoryController : MonoBehaviour
         {
             inventoryModel.AddItem(exampleItem, exampleQuantity);
         }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            inventoryModel.RemoveItem(exampleItem, exampleQuantity);
+        }
     }
 }
