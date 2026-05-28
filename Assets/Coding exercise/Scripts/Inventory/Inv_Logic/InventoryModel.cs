@@ -6,8 +6,8 @@ using UnityEngine;
 public class InventoryModel
 {
   private ItemSlot[] itemSlots;
-   private Dictionary<int, int> itemDictionary = new Dictionary<int, int>();
-    public event Action<int,Sprite,int> OnInventoryChanged;
+  private Dictionary<int, int> itemDictionary = new Dictionary<int, int>();
+  public event Action<int,Sprite,int> OnInventoryChanged;
 
     public InventoryModel(int size)
     {
@@ -19,7 +19,8 @@ public class InventoryModel
         }
     }
 
-        public bool AddItem(ItemSO item, int quantity)
+
+    public bool AddItem(ItemSO item, int quantity)
         {
         if (item == null || quantity <= 0) return false;
         int remainingQuantity = quantity;
@@ -36,15 +37,50 @@ public class InventoryModel
     }
 
 
-
     public bool RemoveItem(ItemSO item, int quantity)
     {
         if (!HasItem(item.itemID))
         {
             return false;
-            // nothing to remove
         }
         int remainingQuantity = RemoveQuantity(item, quantity);
+        if (remainingQuantity > 0)
+        {
+            RemoveFromSlots(item, remainingQuantity);
+        }
+        return true;
+    }
+
+
+    public bool HasItemForCrafting(int itemID, int quantity)
+    {
+        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] >= quantity;
+    }
+
+
+
+
+
+
+    
+    private int RemoveQuantity(ItemSO item, int quantity)
+    {
+        var dictionaryQuantity = itemDictionary[item.itemID];
+        if (dictionaryQuantity < quantity)
+        {
+            return quantity - dictionaryQuantity;
+        }
+        return quantity;
+    }
+
+    private bool HasItem(int itemID)
+    {
+        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] > 0;
+    }
+
+    private void RemoveFromSlots(ItemSO item, int quantity)
+    {
+        int remainingQuantity = quantity;
         for (int i = itemSlots.Length - 1; i >= 0 && remainingQuantity > 0; i--)
         {
             ItemSlot slot = itemSlots[i];
@@ -61,33 +97,6 @@ public class InventoryModel
                 OnInventoryChanged?.Invoke(i, null, 0);
             }
         }
-        return true;
-    }
-
-
-    public bool HasItemForCrafting(int itemID, int quantity)
-    {
-        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] >= quantity;
-    }
-
-
-
-
-
-
-    // Helper methods
-    private int RemoveQuantity(ItemSO item, int quantity)
-    {
-        var dictionaryQuantity = itemDictionary[item.itemID];
-        if (dictionaryQuantity < quantity)
-        {
-            return quantity - dictionaryQuantity;
-        }
-        return quantity;
-    }
-    private bool HasItem(int itemID)
-    {
-        return itemDictionary.ContainsKey(itemID) && itemDictionary[itemID] > 0;
     }
 
     private int FillExistingStacks(ItemSO item, int amount)
@@ -108,7 +117,7 @@ public class InventoryModel
         }
         return amount;
     }
-
+        
     private int FillEmptySlots(ItemSO item, int amount)
     {
         for (int i = 0; i < itemSlots.Length && amount > 0; i++)
@@ -137,7 +146,8 @@ public class InventoryModel
             itemDictionary.Add(item.itemID, quantity);
         }
     }
-     private void RemoveFromDictionary(ItemSO item, int quantity)
+
+    private void RemoveFromDictionary(ItemSO item, int quantity)
     {
         if (itemDictionary.ContainsKey(item.itemID))
         {
