@@ -6,16 +6,8 @@ using UnityEngine.Networking;
 
 public class FirstApiCall : INetworkService
 {
-    private readonly string url = "https://jsonplaceholder.typicode.com/posts/1";
 
-    
-    public async void FetchData()
-    {
-        Debug.Log("Sending request");
-        await SendGetRequestAsync(url);
-    }
-
-    private async UniTask SendGetRequestAsync(string url)
+    public async UniTask SendGetRequestAsync(string url)
     {
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
@@ -44,21 +36,6 @@ public class FirstApiCall : INetworkService
     }
 
     
-    public async void SendData()
-    {
-        PostData newPost = new PostData
-        {
-            UserId = 123,
-            id = 0,
-            title = "Test send",
-            body = "Trying to send data from Unity server",
-        };
-
-        string jsonPayload = JsonUtility.ToJson(newPost);
-        Debug.Log($"Post data: {jsonPayload}");
-
-        await SendPostRequestAsync("https://jsonplaceholder.typicode.com/posts", jsonPayload);
-    }    
 
     public async UniTask SendPostRequestAsync(string url, string jsonPayload)
     {
